@@ -1,0 +1,26 @@
+version: '3.7'
+services:
+  app:
+    restart: always
+    build: ./web
+    expose:
+      - {{ cookiecutter.gunicorn_port }}
+    volumes:
+      - type: volume
+        source: static-data
+        target: /app/web/static
+
+  nginx:
+    restart: always
+    image: nginx:alpine
+    ports:
+    - 80:80/tcp
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      # named volume
+      - static-data:/static
+    depends_on:
+      - app
+
+volumes:
+  static-data:
